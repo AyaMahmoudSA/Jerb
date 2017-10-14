@@ -9,33 +9,48 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.CountDownTimer;
-import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.format.Time;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.av.jerb.Data.City;
+import com.av.jerb.Data.DatabaseHandler;
 import com.av.jerb.Data.StoreData;
-import com.squareup.picasso.Picasso;
-import com.theartofdev.edmodo.cropper.CropImage;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
 
+
     private TextView textDays,textHours,textMinutes,textSeconds,textAddCover;
     private RelativeLayout showDatePicker;
-    ImageView changeCoverPhoto;
+    private ImageView changeCoverPhoto;
+    private FloatingActionButton floatingActionButton;
+
     public static Context context;
     // Timer setup
     public  Time conferenceTime = new Time(Time.getCurrentTimezone());
@@ -48,6 +63,13 @@ public class MainActivity extends AppCompatActivity {
 
     private DatePickerDialog.OnDateSetListener mDateSetListener;
     private static final int GALLERY_PICK=1;
+    DatabaseHandler db = new DatabaseHandler(MainActivity.this);
+
+    // URL of object to be parsed
+     String URL_COUNTRY_CITY= "https://raw.githubusercontent.com/David-Haim/CountriesToCitiesJSON/master/countriesToCities.json";
+    // Defining the Volley request queue that handles the URL request concurrently
+    RequestQueue requestQueue;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,46 +78,16 @@ public class MainActivity extends AppCompatActivity {
 
         context = getApplicationContext();
 
-        this.conferenceTime.setToNow();
 
+        /***************************************************************************
+         * Wedding Date
+         * First part add date and start it count down
+         ****************************************************************************/
         textDays = (TextView) findViewById(R.id.txt_days);
         textHours = (TextView) findViewById(R.id.txt_hours);
         textMinutes = (TextView) findViewById(R.id.txt_minutes);
         textSeconds = (TextView) findViewById(R.id.txt_seconds);
         showDatePicker = (RelativeLayout) findViewById(R.id.count_down);
-        textAddCover = (TextView) findViewById(R.id.add_cover);
-        changeCoverPhoto =(ImageView)findViewById(R.id.img_coverPhoto);
-
-        textAddCover.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, GALLERY_PICK);
-            }
-        });
-
-
-
-
-        int getSeconds = new StoreData().loadSeconds();
-        int getMinutes = new StoreData().loadMinutes();
-        int getHours = new StoreData().loadHours();
-        int getMonthDay = new StoreData().loadMonthDay();
-        int getMonth = new StoreData().loadMonth();
-        int getYear = new StoreData().loadYear();
-
-        if(getYear!=0 || getSeconds!=0 || getHours!=0 || getMinutes !=0 ||getMonth!=0 ){
-
-            configureConferenceDate(getSeconds,getMinutes,getHours,getMonthDay,getMonth,getYear);
-
-        }
-       String getImageLoad = new StoreData().loadImage();
-        if( !getImageLoad.equalsIgnoreCase("") ){
-            byte[] b = Base64.decode(getImageLoad, Base64.DEFAULT);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
-            changeCoverPhoto.setImageBitmap(bitmap);
-        }
 
         showDatePicker.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
                 DatePickerDialog dialog = new DatePickerDialog(
                         MainActivity.this,
-                       android.R.style.Theme_Holo_Dialog_MinWidth,
+                        android.R.style.Theme_Holo_Dialog_MinWidth,
                         mDateSetListener,
                         year,month,day);
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -123,14 +115,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDateSet(DatePicker datePicker, int year2, int month2, int day) {
                 month2 = month2 +1;
-              //  Log.d("TAG", "onDateSet: mm/dd/yyy: " + month2 + "/" + day + "/" + year);
                 int  monthDay=day;
                 int  month=month2-1;
-                  int  year=year2;
+                int  year=year2;
                 Calendar  c = Calendar.getInstance();
-               int hour = c.get(Calendar.HOUR_OF_DAY);
-               int  minute=c.get(Calendar.MINUTE);
-               int second=c.get(Calendar.SECOND);
+                int hour = c.get(Calendar.HOUR_OF_DAY);
+                int  minute=c.get(Calendar.MINUTE);
+                int second=c.get(Calendar.SECOND);
 
                 new StoreData().saveSeconds(second);
                 new StoreData().saveMinutes(minute);
@@ -148,21 +139,109 @@ public class MainActivity extends AppCompatActivity {
                     configureConferenceDate(second,minute,hour,monthDay,month,year);
 
                 }
-             //   startService(new Intent(MainActivity.this, CountDownTimerService.class));
-              //  Log.i(TAG, "Started service");
-              //  String date = month + "/" + day + "/" + year;
-            //    mDisplayDate.setText(date);
             }
         };
+        // When launch app again start it from stop
+        // get it from shared preference
+        int getSeconds = new StoreData().loadSeconds();
+        int getMinutes = new StoreData().loadMinutes();
+        final int getHours = new StoreData().loadHours();
+        int getMonthDay = new StoreData().loadMonthDay();
+        int getMonth = new StoreData().loadMonth();
+        int getYear = new StoreData().loadYear();
+        if(getYear!=0 || getSeconds!=0 || getHours!=0 || getMinutes !=0 ||getMonth!=0 ){
+
+            configureConferenceDate(getSeconds,getMinutes,getHours,getMonthDay,getMonth,getYear);
+
+        }
+     /****************************Finish First Part Wedding Date*****************************************************/
 
 
 
+        /*******************************************************************************************
+         * Wedding Date
+         * Second part add cover photo
+         ******************************************************************************************/
 
+        textAddCover = (TextView) findViewById(R.id.add_cover);
+        changeCoverPhoto =(ImageView)findViewById(R.id.img_coverPhoto);
+
+        textAddCover.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                photoPickerIntent.setType("image/*");
+                startActivityForResult(photoPickerIntent, GALLERY_PICK);
+            }
+        });
+
+        // to get save photo when app launch again
+       String getImageLoad = new StoreData().loadImage();
+        if( !getImageLoad.equalsIgnoreCase("") ){
+            byte[] b = Base64.decode(getImageLoad, Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
+            changeCoverPhoto.setImageBitmap(bitmap);
+        }
+
+        /****************************Finish Second Part Wedding Date*****************************************************/
+
+        floatingActionButton = (FloatingActionButton) findViewById(R.id.floatingActionButton);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent planActivity = new Intent(MainActivity.this,PlanActivity.class);
+                startActivity(planActivity);
+            }
+        });
+
+        List<City> cityList = db.getAllCity();
+        if(cityList.size()!=0){
+          //do nothing
+
+
+        }else{
+            // Creates the Volley request queue
+            requestQueue = Volley.newRequestQueue(this);
+            // Creating the JsonObjectRequest class called obreq, passing required parameters:
+            //GET is used to fetch data from the server, JsonURL is the URL to be fetched from.
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, URL_COUNTRY_CITY, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        JSONArray getCityofcountry = response.getJSONArray("Egypt");
+                        for(int i =0;i<=getCityofcountry.length();i++){
+                            City c= new City();
+                            String getcity = getCityofcountry.get(i).toString();
+                            c.setCityName(getcity);
+                            Log.d("Insert: ", "Inserting ..");
+                            db.addCity(c);
+
+                        }
+                    } catch (JSONException e) {
+
+
+
+                    }
+
+
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                }
+            });
+            requestQueue.add(jsonObjectRequest);
+
+        }
 
 
     }
 
 
+    //Method call to start count down from current date to date that user enter it
+    //input  : current time with second,minute ,hour and user date monthday , month ,year
+    //result start count down every 1 sec from current date to specfic date
     private void configureConferenceDate(int second,int minute,int hour,int monthDay,int month,int year) {
 
         conferenceTime.set(second,minute,hour,monthDay, month, year);
@@ -204,6 +283,8 @@ public class MainActivity extends AppCompatActivity {
         }.start();
     }
 
+
+    // Override method call when user select photo from
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -229,6 +310,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         }
+
 
 
 }

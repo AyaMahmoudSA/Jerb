@@ -1,3 +1,17 @@
 <resources>
+
     <string name="app_name">Jerb</string>
+
+                <!--Main Screen-->
+    <string name="days">Days</string>
+    <string name="hours">Hours</string>
+    <string name="minutes">Minutes</string>
+    <string name="sec">Sec</string>
+    <string name="zero">00</string>
+    <string name="add_cover">add cover</string>
+
+                   <!--Plan Screen-->
+    <string name="love_story">Love Story</string>
+    <string name="next">next</string>
+
 </resources>

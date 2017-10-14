@@ -1,98 +1,87 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     android:layout_below="@+id/toolbar"
     xmlns:android="http://schemas.android.com/apk/res/android"
-   android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    >
+    android:layout_width="match_parent"
+    android:layout_height="135dp"
+    android:id="@+id/relativeLayout">
     <ImageView
         android:id="@+id/img_coverPhoto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:scaleType="centerCrop"
         android:src="@drawable/cover_photo"/>
-
 
     <RelativeLayout
         android:id="@+id/count_down"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
         >
 
-
         <TextView
+            style="@style/TextViewStyle"
             android:id="@+id/days"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Days"
-            android:textSize="20sp"
-            android:layout_marginLeft="50dp"
+            android:text="@string/days"
+            android:layout_marginLeft="10dp"
+            android:layout_alignParentLeft="true"
             />
         <TextView
+            style="@style/TextViewStyle"
             android:id="@+id/txt_days"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_below="@+id/days"
-            android:layout_marginLeft="60dp"
-            android:textSize="20sp"
-            android:text="00"/>
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="10dp"
+            android:text="@string/zero"/>
 
         <TextView
+            style="@style/TextViewStyle"
             android:id="@+id/hours"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/days"
-            android:textSize="20sp"
             android:layout_marginLeft="20dp"
-            android:text="Hours"/>
+            android:text="@string/hours"/>
+
         <TextView
+            style="@style/TextViewStyle"
             android:id="@+id/txt_hours"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="00"
-            android:textSize="20sp"
+            android:text="@string/zero"
             android:layout_below="@+id/hours"
             android:layout_toRightOf="@+id/txt_days"
             android:layout_marginLeft="45sp"
             />
 
         <TextView
+            style="@style/TextViewStyle"
             android:id="@+id/minutes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/hours"
             android:layout_marginLeft="20dp"
-            android:textSize="20sp"
-            android:text="Minutes"/>
-          <TextView
-              android:id="@+id/txt_minutes"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_below="@+id/minutes"
-              android:layout_toRightOf="@+id/txt_hours"
-              android:textSize="20sp"
-              android:text="00"
-              android:layout_marginLeft="65dp"
-              />
+            android:text="@string/minutes"/>
+
+        <TextView
+            style="@style/TextViewStyle"
+            android:id="@+id/txt_minutes"
+            android:layout_below="@+id/minutes"
+            android:layout_toRightOf="@+id/txt_hours"
+            android:text="@string/zero"
+            android:layout_marginLeft="65dp"
+            />
 
 
         <TextView
+            style="@style/TextViewStyle"
             android:id="@+id/seconds"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/minutes"
-            android:textSize="20sp"
             android:layout_marginLeft="20dp"
-            android:text="Seconds"/>
-           <TextView
-               android:id="@+id/txt_seconds"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_toRightOf="@+id/txt_minutes"
-               android:layout_below="@+id/minutes"
-               android:textSize="20sp"
-               android:text="00"
-               android:layout_marginLeft="75dp"/>
+            android:text="@string/sec"/>
+        <TextView
+            style="@style/TextViewStyle"
+            android:id="@+id/txt_seconds"
+            android:layout_toRightOf="@+id/txt_minutes"
+            android:layout_below="@+id/seconds"
+            android:layout_marginLeft="55dp"
+            android:text="@string/zero"
+            />
 
     </RelativeLayout>
 
@@ -100,15 +89,15 @@
         android:id="@+id/add_cover"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="add cover"
+        android:text="@string/add_cover"
         android:textAllCaps="true"
         android:layout_below="@id/count_down"
-        android:layout_marginTop="30dp"
         android:layout_marginRight="20dp"
         android:textColor="@color/colorPrimary"
         android:textStyle="bold"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="15dp"
-         />
+        android:layout_marginTop="10dp"
+
+        />
 
 </RelativeLayout>

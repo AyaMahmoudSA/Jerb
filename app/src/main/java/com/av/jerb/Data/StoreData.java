@@ -2,11 +2,10 @@ package com.av.jerb.Data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 
 import com.av.jerb.MainActivity;
 
-import static android.R.attr.value;
+import java.util.ArrayList;
 
 /**
  * Created by Maiada on 10/13/2017.
@@ -17,6 +16,7 @@ public class StoreData {
     private SharedPreferences.Editor editor;
     String DATABASE_NAME = "com.av.jerb";
     private Context context;
+    ArrayList<String> cityArrayList = new ArrayList<>();
 
     public StoreData() {
         super();
@@ -96,4 +96,6 @@ public class StoreData {
        String  bitmap = sharedPreferences.getString("img_save","");
         return bitmap;
     }
+
+
 }
