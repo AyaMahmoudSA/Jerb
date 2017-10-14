@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.format.Time;
+import android.util.Base64;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.ImageView;
@@ -24,6 +25,7 @@ import com.av.jerb.Data.StoreData;
 import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Calendar;
@@ -88,6 +90,12 @@ public class MainActivity extends AppCompatActivity {
             configureConferenceDate(getSeconds,getMinutes,getHours,getMonthDay,getMonth,getYear);
 
         }
+       String getImageLoad = new StoreData().loadImage();
+        if( !getImageLoad.equalsIgnoreCase("") ){
+            byte[] b = Base64.decode(getImageLoad, Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
+            changeCoverPhoto.setImageBitmap(bitmap);
+        }
 
         showDatePicker.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
 
                 DatePickerDialog dialog = new DatePickerDialog(
                         MainActivity.this,
-                       R.style.DialogStyle,
+                       android.R.style.Theme_Holo_Dialog_MinWidth,
                         mDateSetListener,
                         year,month,day);
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -120,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
                 int  month=month2-1;
                   int  year=year2;
                 Calendar  c = Calendar.getInstance();
-               int hour = c.get(Calendar.HOUR)+12;
+               int hour = c.get(Calendar.HOUR_OF_DAY);
                int  minute=c.get(Calendar.MINUTE);
                int second=c.get(Calendar.SECOND);
 
@@ -205,17 +213,20 @@ public class MainActivity extends AppCompatActivity {
                 final Uri imageUri = data.getData();
                 final InputStream imageStream = getContentResolver().openInputStream(imageUri);
                 final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                selectedImage.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] b = baos.toByteArray();
+
+                String encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
+                new StoreData().saveImage(encodedImage);
                 changeCoverPhoto.setImageBitmap(selectedImage);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
-            //    Toast.makeText(PostImage.this, "Something went wrong", Toast.LENGTH_LONG).show();
             }
 
         }else {
-         //   Toast.makeText(PostImage.this, "You haven't picked Image",Toast.LENGTH_LONG).show();
         }
-            //     CropImage.activity(ImageUri).setAspectRatio(1,1).start(this);
-            // circleImageView .setImageResource(ImageUri);
 
         }
 

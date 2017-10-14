@@ -2,8 +2,11 @@ package com.av.jerb.Data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 
 import com.av.jerb.MainActivity;
+
+import static android.R.attr.value;
 
 /**
  * Created by Maiada on 10/13/2017.
@@ -82,5 +85,15 @@ public class StoreData {
     public int loadYear(){
         int  savedValue = sharedPreferences.getInt("Year", 0);
         return savedValue;
+    }
+
+    public void saveImage(String bitmap){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("img_save", bitmap);
+        editor.commit();
+    }
+    public  String loadImage(){
+       String  bitmap = sharedPreferences.getString("img_save","");
+        return bitmap;
     }
 }
