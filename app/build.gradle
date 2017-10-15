@@ -29,7 +29,10 @@ dependencies {
     compile 'com.android.support:design:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'org.adw.library:discrete-seekbar:1.0.1' // using library for seekbar
-    compile 'com.mcxiaoke.volley:library:1.0.19'
-    compile 'com.google.code.gson:gson:2.8.2'
+    compile 'com.mcxiaoke.volley:library:1.0.19' // using volley to fetch data
+    compile 'com.android.support:cardview-v7:25.3.+' //card view
+    compile 'com.squareup.picasso:picasso:2.5.2'
+
+
     testCompile 'junit:junit:4.12'
 }

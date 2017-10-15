@@ -5,7 +5,7 @@
                 <!--Main Screen-->
     <string name="days">Days</string>
     <string name="hours">Hours</string>
-    <string name="minutes">Minutes</string>
+    <string name="minutes">Mins</string>
     <string name="sec">Sec</string>
     <string name="zero">00</string>
     <string name="add_cover">add cover</string>
