@@ -43,6 +43,10 @@ import com.av.jerb.Data.DatabaseHandler;
 import com.av.jerb.Data.StoreData;
 import com.av.jerb.Data.Tips;
 import com.av.jerb.Data.ToDo;
+import com.github.ksoichiro.android.observablescrollview.ObservableListView;
+import com.github.ksoichiro.android.observablescrollview.ObservableScrollView;
+import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
+import com.github.ksoichiro.android.observablescrollview.ScrollState;
 
 
 import org.json.JSONArray;
@@ -62,13 +66,14 @@ import static android.R.attr.bitmap;
 import static com.av.jerb.R.id.tips;
 
 
-public class MainActivity extends AppCompatActivity   {
+public class MainActivity extends AppCompatActivity implements ObservableScrollViewCallbacks {
 
     private Toolbar toolbar;
     private TextView textDays,textHours,textMinutes,textSeconds,textAddCover;
     private ConstraintLayout showDatePicker;
     private ConstraintLayout changeCoverPhoto;
     private FloatingActionButton floatingActionButton;
+    private ObservableScrollView observableScrollView;
 
     public static Context context;
     // Timer setup
@@ -118,6 +123,8 @@ public class MainActivity extends AppCompatActivity   {
         textMinutes = (TextView) findViewById(R.id.txt_minutes);
         textSeconds = (TextView) findViewById(R.id.txt_seconds);
         showDatePicker = (ConstraintLayout) findViewById(R.id.showDataPicker);
+        observableScrollView =(ObservableScrollView) findViewById(R.id.scrollView);
+        observableScrollView.setScrollViewCallbacks(this);
 
         showDatePicker.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -254,6 +261,8 @@ public class MainActivity extends AppCompatActivity   {
         toDoAdapter = new ToDoAdapter(setToDoList);
         toDoList.setAdapter(toDoAdapter);
         getToDoList();
+
+
 
     }
 
@@ -443,11 +452,6 @@ public class MainActivity extends AppCompatActivity   {
                 toDoAdapter.notifyDataSetChanged();
 
 
-
-
-
-
-
             }
         }, new Response.ErrorListener() {
             @Override
@@ -459,6 +463,30 @@ public class MainActivity extends AppCompatActivity   {
 
     }
 
+
+    @Override
+    public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
+
+    }
+
+    @Override
+    public void onDownMotionEvent() {
+
+    }
+
+    @Override
+    public void onUpOrCancelMotionEvent(ScrollState scrollState) {
+        ActionBar ab = getSupportActionBar();
+        if (scrollState == ScrollState.UP) {
+            if (ab.isShowing()) {
+                ab.hide();
+            }
+        } else if (scrollState == ScrollState.DOWN) {
+            if (!ab.isShowing()) {
+                ab.show();
+            }
+        }
+    }
 }
 
 

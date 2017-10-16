@@ -10,36 +10,42 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Maiada on 10/14/2017.
+ * Created by Maiada on 10/16/2017.
  */
 
-public class DatabaseHandler extends SQLiteOpenHelper {
-
+public class DatabaseHandlerPlan extends SQLiteOpenHelper {
 
     // All Static variables
     // Database Version
     private static final int DATABASE_VERSION = 1;
 
     // Database Name
-    private static final String DATABASE_NAME = "CityOfCountry";
+    private static final String DATABASE_NAME = "PlanOfUser";
 
     // Contacts table name
-    private static final String TABLE_CONTACTS = "Cities";
+    private static final String TABLE_CONTACTS = "Plans";
 
     // Contacts Table Columns names
     private static final String KEY_ID = "id";
-    private static final String KEY_NAME = "cityName";
+    private static final String KEY_NAME = "planName";
+    private static final String KEY_Location = "location";
+    private static final String KEY_Number_Of_Family_Friends = "memberNumber";
+    private static final String KEY_Budget = "budget";
 
 
 
-    public DatabaseHandler(Context context) {
+    public DatabaseHandlerPlan(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_CONTACTS + "("
-                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT" + ")";
+                + KEY_ID + " INTEGER PRIMARY KEY," +
+                KEY_NAME + " TEXT" +
+                KEY_Location+" TEXT"+
+                KEY_Number_Of_Family_Friends+" TEXT"+
+                KEY_Budget+" TEXT"+")";
         db.execSQL(CREATE_CONTACTS_TABLE);
     }
 
@@ -52,9 +58,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    // Getting All Cities
-    public List<City> getAllCity() {
-        List<City> cityList = new ArrayList<City>();
+    // Getting All Plans
+    public List<Plans> getAllPlans() {
+        List<Plans> planList = new ArrayList<Plans>();
         // Select All Query
         String selectQuery = "SELECT  * FROM " + TABLE_CONTACTS;
 
@@ -64,24 +70,28 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-                City city = new City();
-                city.setId(Integer.parseInt(cursor.getString(0)));
-                city.setCityName(cursor.getString(1));
-                // Adding city to list
-                cityList.add(city);
+                Plans plans = new Plans();
+                plans.setId(Integer.parseInt(cursor.getString(0)));
+                plans.setPlanName(cursor.getString(1));
+                plans.setLocation(cursor.getString(2));
+                plans.setMemberNumber(cursor.getString(3));
+                plans.setBudget(cursor.getString(4));
+
+                // Adding plan to list
+                planList.add(plans);
             } while (cursor.moveToNext());
         }
 
-        // return city list
-        return cityList;
+        // return plan list
+        return planList;
     }
 
-    // Adding new City
+    // Adding new plan
     public void addCity(City city) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_NAME, city.getCityName()); // city Name
+        values.put(KEY_NAME, city.getCityName()); // plan Name
         // Inserting Row
         db.insert(TABLE_CONTACTS, null, values);
         db.close(); // Closing database connection
