@@ -40,11 +40,13 @@ public class DatabaseHandlerPlan extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+
+
         String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_CONTACTS + "("
                 + KEY_ID + " INTEGER PRIMARY KEY," +
-                KEY_NAME + " TEXT" +
-                KEY_Location+" TEXT"+
-                KEY_Number_Of_Family_Friends+" TEXT"+
+                KEY_NAME + " TEXT," +
+                KEY_Location+" TEXT,"+
+                KEY_Number_Of_Family_Friends+" TEXT,"+
                 KEY_Budget+" TEXT"+")";
         db.execSQL(CREATE_CONTACTS_TABLE);
     }
@@ -71,6 +73,9 @@ public class DatabaseHandlerPlan extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 Plans plans = new Plans();
+
+
+
                 plans.setId(Integer.parseInt(cursor.getString(0)));
                 plans.setPlanName(cursor.getString(1));
                 plans.setLocation(cursor.getString(2));
@@ -87,11 +92,15 @@ public class DatabaseHandlerPlan extends SQLiteOpenHelper {
     }
 
     // Adding new plan
-    public void addCity(City city) {
+    public void addPlan(Plans plans) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_NAME, city.getCityName()); // plan Name
+        values.put(KEY_NAME, plans.getPlanName()); // plan Name
+        values.put(KEY_Location, plans.getLocation()); // plan location
+        values.put(KEY_Number_Of_Family_Friends, plans.getMemberNumber()); // plan number
+        values.put(KEY_Budget, plans.getBudget()); // plan budget
+
         // Inserting Row
         db.insert(TABLE_CONTACTS, null, values);
         db.close(); // Closing database connection

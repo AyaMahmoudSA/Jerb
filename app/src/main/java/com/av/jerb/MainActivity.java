@@ -35,11 +35,14 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.av.jerb.Adapter.PlanAdapter;
 import com.av.jerb.Adapter.TipsAdapter;
 import com.av.jerb.Adapter.ToDoAdapter;
 import com.av.jerb.Data.City;
 import com.av.jerb.Data.Constants_URL;
 import com.av.jerb.Data.DatabaseHandler;
+import com.av.jerb.Data.DatabaseHandlerPlan;
+import com.av.jerb.Data.Plans;
 import com.av.jerb.Data.StoreData;
 import com.av.jerb.Data.Tips;
 import com.av.jerb.Data.ToDo;
@@ -90,17 +93,21 @@ public class MainActivity extends AppCompatActivity implements ObservableScrollV
     private static final int GALLERY_PICK=1;
 
     DatabaseHandler db = new DatabaseHandler(MainActivity.this);
+    DatabaseHandlerPlan dbPlan = new DatabaseHandlerPlan(MainActivity.this);
+
 
     // Defining the Volley request queue that handles the URL request concurrently /
     RequestQueue requestQueue;
 
-    RecyclerView tipsList,toDoList;
+    RecyclerView tipsList,toDoList,planList;
 
     public  ArrayList<Tips> setTipsList= new ArrayList<>();
     private TipsAdapter tipsAdapter;
 
     public  ArrayList<ToDo> setToDoList= new ArrayList<>();
     private ToDoAdapter toDoAdapter;
+
+    private PlanAdapter planAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -246,6 +253,26 @@ public class MainActivity extends AppCompatActivity implements ObservableScrollV
         }
           /****************************************************************************/
 
+        planList = (RecyclerView) findViewById(R.id.list_plan);
+        planList.setLayoutManager(new LinearLayoutManager(this));
+        planList.setHasFixedSize(true);
+
+
+        List<Plans>  getplanList = dbPlan.getAllPlans();
+
+
+        if(dbPlan.getAllPlans().size()!=0){
+
+          //  Toast.makeText(context, "full", Toast.LENGTH_SHORT).show();
+            planAdapter = new PlanAdapter(getplanList);
+            planList.setAdapter(planAdapter);
+            planAdapter.notifyDataSetChanged();
+
+        }else {
+           // Toast.makeText(context, "empty", Toast.LENGTH_SHORT).show();
+
+        }
+
         // Load form url data and set to adapter
         tipsList = (RecyclerView) findViewById(R.id.list_tips);
         tipsList.setLayoutManager(new LinearLayoutManager(this));
@@ -261,6 +288,10 @@ public class MainActivity extends AppCompatActivity implements ObservableScrollV
         toDoAdapter = new ToDoAdapter(setToDoList);
         toDoList.setAdapter(toDoAdapter);
         getToDoList();
+
+
+
+
 
 
 

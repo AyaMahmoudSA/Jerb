@@ -97,5 +97,14 @@ public class StoreData {
         return bitmap;
     }
 
+    public void saveAlphabet(String bitmap){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("alphabet_save", bitmap);
+        editor.commit();
+    }
+    public  String loadAlphabet(){
+        String  bitmap = sharedPreferences.getString("alphabet_save","");
+        return bitmap;
+    }
 
 }

@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <android.support.v7.widget.CardView
         android:layout_width="0dp"
@@ -58,29 +58,30 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="181dp"
-                android:layout_marginTop="-1dp"
+                android:layout_marginTop="8dp"
                 android:text="400+Family&amp;Friends"
                 android:textSize="12sp"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/plan_location"
                 android:layout_marginLeft="0dp"
-                app:layout_constraintLeft_toLeftOf="@+id/plan_location" />
+                app:layout_constraintLeft_toLeftOf="@+id/plan_location"
+                app:layout_constraintHorizontal_bias="0.0" />
 
             <TextView
                 android:id="@+id/budgt_plan"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:layout_marginLeft="0dp"
                 android:layout_marginRight="159dp"
-                android:layout_marginTop="0dp"
+                android:layout_marginTop="8dp"
                 android:text="Planned Cost: 100000 LE"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintLeft_toLeftOf="@+id/family_friends_count"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/family_friends_count" />
+                app:layout_constraintTop_toBottomOf="@+id/family_friends_count"
+                android:layout_marginLeft="0dp"
+                app:layout_constraintVertical_bias="0.0"
+                app:layout_constraintLeft_toLeftOf="@+id/family_friends_count" />
 
 
         </android.support.constraint.ConstraintLayout>

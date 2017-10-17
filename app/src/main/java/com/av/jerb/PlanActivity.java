@@ -1,9 +1,11 @@
 package com.av.jerb;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -18,11 +20,18 @@ import com.av.jerb.Data.City;
 import com.av.jerb.Data.DatabaseHandler;
 import com.av.jerb.Data.DatabaseHandlerPlan;
 import com.av.jerb.Data.Plans;
+import com.av.jerb.Data.StoreData;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
+import org.adw.library.widgets.discreteseekbar.internal.Marker;
 
 import java.util.ArrayList;
+import java.util.IllegalFormatCodePointException;
 import java.util.List;
+
+import static android.R.attr.value;
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
+import static android.os.Build.VERSION_CODES.M;
 
 public class PlanActivity extends AppCompatActivity {
 
@@ -35,7 +44,7 @@ public class PlanActivity extends AppCompatActivity {
     private TextView nextToAdd;
     private CheckBox checkBoxLocation,checkBoxBudget;
     private DatabaseHandlerPlan databaseHandlerPlan = new DatabaseHandlerPlan(this);
-
+    private  boolean checkedBudget;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +58,10 @@ public class PlanActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false); // remove label name (title)
 
         checkBoxLocation =(CheckBox)findViewById(R.id.checkbox_anylocation);
+
+
         checkBoxBudget =(CheckBox)findViewById(R.id.checkbox_notdecided);
+        checkedBudget = checkBoxBudget.isChecked();
         nextToAdd =(TextView) findViewById(R.id.txt_next);
 
 
@@ -105,69 +117,173 @@ public class PlanActivity extends AppCompatActivity {
         });
 
 
+
+
+
         nextToAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Plans plans = new Plans();
 
-                if (checkBoxLocation.isChecked()) {
+                boolean checkedLocation = checkBoxLocation.isChecked();
+                if(checkedLocation){
 
 
-                } else {
+                    boolean checkedBudget = checkBoxBudget.isChecked();
+                    if(checkedBudget){
+                       /* Toast.makeText(PlanActivity.this, "put not decide yet", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PlanActivity.this, "add Any db", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PlanActivity.this, ""+discreteSeekBar.getProgress(), Toast.LENGTH_SHORT).show();*/
+                        if(databaseHandlerPlan.getAllPlans().size()!=0){
+                            String getLastAlphabet =  new StoreData().loadAlphabet();
+                            int charValue = getLastAlphabet .charAt(0);
+                            String nextAlphabet = String.valueOf( (char) (charValue + 1));
+                            new StoreData().saveAlphabet(nextAlphabet);
+                            plans.setPlanName(nextAlphabet);
+                            plans.setLocation("Any");
+                            plans.setMemberNumber(""+discreteSeekBar.getProgress());
+                            plans.setBudget("Not Decide");
+                            databaseHandlerPlan.addPlan(plans);
 
-                    if (autoCompleteTextView != null) {
-                        // put location on db
 
-                    } else {
-                        autoCompleteTextView.setError("You must enter locatin");
+                        }else{
+                            String firstAlphabet = "A";
+                            new StoreData().saveAlphabet(firstAlphabet);
+                            plans.setPlanName(firstAlphabet);
+                            plans.setLocation("Any");
+                            plans.setMemberNumber(""+discreteSeekBar.getProgress());
+                            plans.setBudget("Not Decide");
+                            databaseHandlerPlan.addPlan(plans);
+
+                        }
+
+
+                        Intent intent = new Intent(PlanActivity.this, MainActivity.class);
+                        startActivity(intent);
+
+                    }else{
+                        if(moneyRange.getText().length()>0){
+                            if(Long.valueOf(moneyRange.getText().toString())<10000||Long.valueOf(moneyRange.getText().toString())>100000000){
+
+                                Toast.makeText(PlanActivity.this, moneyRange.getText().toString(), Toast.LENGTH_SHORT).show();
+
+                            }
+
+                        }else{
+                            Toast.makeText(PlanActivity.this, "also you must enter budget", Toast.LENGTH_SHORT).show();
+
+
+                        }
+
                     }
-                }
+                }else{
+
+                    if(autoCompleteTextView.getText().length()>0){
+
+                        boolean checkedBudget = checkBoxBudget.isChecked();
+                        if(checkedBudget){
+
+                           /* Toast.makeText(PlanActivity.this, "put not decide yet", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(PlanActivity.this, "add city db", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(PlanActivity.this, ""+discreteSeekBar.getProgress(), Toast.LENGTH_SHORT).show();*/
+
+                            if(databaseHandlerPlan.getAllPlans().size()!=0){
+                                String getLastAlphabet =  new StoreData().loadAlphabet();
+                                int charValue = getLastAlphabet .charAt(0);
+                                String nextAlphabet = String.valueOf( (char) (charValue + 1));
+                                new StoreData().saveAlphabet(nextAlphabet);
+                                plans.setPlanName(nextAlphabet);
+                                plans.setLocation(autoCompleteTextView.getText().toString());
+                                plans.setMemberNumber(""+discreteSeekBar.getProgress());
+                                plans.setBudget("Not Decide");
+                                databaseHandlerPlan.addPlan(plans);
+
+                                Intent intent = new Intent(PlanActivity.this, MainActivity.class);
+                                startActivity(intent);
+
+                            }else{
+                                String firstAlphabet = "A";
+                                new StoreData().saveAlphabet(firstAlphabet);
+                                plans.setPlanName(firstAlphabet);
+                                plans.setLocation(autoCompleteTextView.getText().toString());
+                                plans.setMemberNumber(""+discreteSeekBar.getProgress());
+                                plans.setBudget("Not Decide");
+                                databaseHandlerPlan.addPlan(plans);
+
+                                Intent intent = new Intent(PlanActivity.this, MainActivity.class);
+                                startActivity(intent);
+
+                            }
 
 
 
-              /*  if(checkBoxBudget.isChecked()){
 
 
-                }else {
-                    if (moneyRange != null) {
-                        //put budget to db
+                        }else{
+                            if(moneyRange.getText().length()>0){
+                                if(moneyRange.getText().length()<10000||moneyRange.getText().length()>100000000){
 
-                    } else {
-                        moneyRange.setError("You must enter budget");
+  /*                                  Toast.makeText(PlanActivity.this, moneyRange.getText().toString(), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(PlanActivity.this, "add city db", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(PlanActivity.this, ""+discreteSeekBar.getProgress(), Toast.LENGTH_SHORT).show();*/
+
+
+
+
+
+                                    if(databaseHandlerPlan.getAllPlans().size()!=0){
+                                        String getLastAlphabet =  new StoreData().loadAlphabet();
+                                        int charValue = getLastAlphabet .charAt(0);
+                                        String nextAlphabet = String.valueOf( (char) (charValue + 1));
+                                        new StoreData().saveAlphabet(nextAlphabet);
+                                        plans.setPlanName(nextAlphabet);
+                                        plans.setLocation(autoCompleteTextView.getText().toString());
+                                        plans.setMemberNumber(""+discreteSeekBar.getProgress());
+                                        plans.setBudget(moneyRange.getText().toString());
+                                        databaseHandlerPlan.addPlan(plans);
+
+                                        Intent intent = new Intent(PlanActivity.this, MainActivity.class);
+                                        startActivity(intent);
+
+                                    }else{
+                                        String firstAlphabet = "A";
+                                        new StoreData().saveAlphabet(firstAlphabet);
+                                        plans.setPlanName(firstAlphabet);
+                                        plans.setLocation(autoCompleteTextView.getText().toString());
+                                        plans.setMemberNumber(""+discreteSeekBar.getProgress());
+                                        plans.setBudget(moneyRange.getText().toString());
+                                        databaseHandlerPlan.addPlan(plans);
+
+                                        Intent intent = new Intent(PlanActivity.this, MainActivity.class);
+                                        startActivity(intent);
+
+                                    }
+
+
+
+                                }
+
+                            }else{
+                                Toast.makeText(PlanActivity.this, "also you must enter budget", Toast.LENGTH_SHORT).show();
+
+                            }
+
+                        }
+
+
+                    } else{
+                        Toast.makeText(PlanActivity.this, "you must enter city", Toast.LENGTH_SHORT).show();
+
                     }
+
+
+
+
+
                 }
-
-
-                     discreteSeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
-                         @Override
-                         public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-                             // put value on db
-
-                         }
-
-                         @Override
-                         public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
-
-                         }
-
-                         @Override
-                         public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
-
-                         }
-                     });
-
-
-
-
-                 }
-*/
-
 
             }
-
-
-
-
         });
 
 
